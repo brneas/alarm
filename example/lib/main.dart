@@ -41,7 +41,7 @@ class _MyAppState extends State<MyApp> {
 
     if (ringDay() == 'tomorrow') dt = dt.add(const Duration(days: 1));
 
-    setAlarm(dt);
+    setAlarm(123, dt);
   }
 
   String ringDay() {
@@ -56,9 +56,10 @@ class _MyAppState extends State<MyApp> {
     return 'tomorrow';
   }
 
-  Future<void> setAlarm(DateTime dateTime, [bool enableNotif = true]) async {
+  Future<void> setAlarm(int alarmId, DateTime dateTime,
+      [bool enableNotif = true]) async {
     await Alarm.set(
-      alarmId: 123,
+      alarmId: alarmId,
       alarmDateTime: dateTime,
       assetAudio: 'assets/sample.mp3',
       loopAudio: loopAudio,
@@ -118,12 +119,13 @@ class _MyAppState extends State<MyApp> {
               ),
             const SizedBox(height: 50),
             RawMaterialButton(
-              onPressed: () => setAlarm(DateTime.now(), false),
+              onPressed: () => setAlarm(123, DateTime.now(), false),
               fillColor: Colors.lightBlueAccent,
               child: const Text('Ring alarm now'),
             ),
             RawMaterialButton(
               onPressed: () => setAlarm(
+                123,
                 DateTime.now().add(const Duration(seconds: 3)),
                 false,
               ),
@@ -134,6 +136,7 @@ class _MyAppState extends State<MyApp> {
               onPressed: () {
                 DateTime now = DateTime.now();
                 setAlarm(
+                  123,
                   DateTime(
                     now.year,
                     now.month,
@@ -146,6 +149,15 @@ class _MyAppState extends State<MyApp> {
               },
               fillColor: Colors.lightBlueAccent,
               child: const Text('Ring alarm on next minute'),
+            ),
+            RawMaterialButton(
+              onPressed: () {
+                setAlarm(123, DateTime.now(), false);
+                setAlarm(
+                    1234, DateTime.now().add(new Duration(seconds: 15)), false);
+              },
+              fillColor: Colors.lightBlueAccent,
+              child: const Text('Ring alarm now x2'),
             ),
             const SizedBox(height: 50),
             if (isRinging) const Text("Ringing..."),

@@ -10,10 +10,6 @@ import 'package:just_audio/just_audio.dart';
 /// For Android support, AndroidAlarmManager is used to set an alarm
 /// and trigger a callback when the given time is reached.
 class AndroidAlarm {
-  //static const int alarmId = 888;
-  static String ringPort = 'alarm-ring';
-  static String stopPort = 'alarm-stop';
-
   /// Initializes AndroidAlarmManager dependency
   static Future<void> init() => AndroidAlarmManager.initialize();
 
@@ -27,15 +23,16 @@ class AndroidAlarm {
     String? notifTitle,
     String? notifBody,
   ) async {
-    ringPort = ringPort + '-' + alarmId.toString();
     try {
       final ReceivePort port = ReceivePort();
-      final success =
-          IsolateNameServer.registerPortWithName(port.sendPort, ringPort);
+      final success = IsolateNameServer.registerPortWithName(
+          port.sendPort, 'alarm-ring' + '-' + alarmId.toString());
 
       if (!success) {
-        IsolateNameServer.removePortNameMapping(ringPort);
-        IsolateNameServer.registerPortWithName(port.sendPort, ringPort);
+        IsolateNameServer.removePortNameMapping(
+            'alarm-ring' + '-' + alarmId.toString());
+        IsolateNameServer.registerPortWithName(
+            port.sendPort, 'alarm-ring' + '-' + alarmId.toString());
       }
       port.listen((message) {
         print("[Alarm] (main) received: $message");
@@ -71,9 +68,13 @@ class AndroidAlarm {
   /// is received from the main thread.
   @pragma('vm:entry-point')
   static Future<void> playAlarm(int id, Map<String, dynamic> data) async {
+    print('INFOOOOOOOOOOOOOOO');
+    print('alarm-ring' + '-' + id.toString());
+    print(id);
+
     final audioPlayer = AudioPlayer();
     SendPort send =
-        IsolateNameServer.lookupPortByName(ringPort + '-' + id.toString())!;
+        IsolateNameServer.lookupPortByName('alarm-ring' + '-' + id.toString())!;
 
     send.send('ring');
 
@@ -107,14 +108,15 @@ class AndroidAlarm {
     }
 
     try {
-      stopPort = stopPort + '-' + id.toString();
       final ReceivePort port = ReceivePort();
-      final success =
-          IsolateNameServer.registerPortWithName(port.sendPort, stopPort);
+      final success = IsolateNameServer.registerPortWithName(
+          port.sendPort, 'alarm-stop' + '-' + id.toString());
 
       if (!success) {
-        IsolateNameServer.removePortNameMapping(stopPort);
-        IsolateNameServer.registerPortWithName(port.sendPort, stopPort);
+        IsolateNameServer.removePortNameMapping(
+            'alarm-stop' + '-' + id.toString());
+        IsolateNameServer.registerPortWithName(
+            port.sendPort, 'alarm-stop' + '-' + id.toString());
       }
 
       port.listen(
@@ -137,7 +139,7 @@ class AndroidAlarm {
   static Future<bool> stop(int alarmId) async {
     try {
       final SendPort send = IsolateNameServer.lookupPortByName(
-          stopPort + '-' + alarmId.toString())!;
+          'alarm-stop' + '-' + alarmId.toString())!;
       print("[Alarm] (main) send stop to isolate");
       send.send('stop');
     } catch (e) {
