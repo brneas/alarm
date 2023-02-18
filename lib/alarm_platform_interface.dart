@@ -35,11 +35,11 @@ abstract class AlarmPlatform extends PlatformInterface {
     throw UnimplementedError('setAlarm() has not been implemented.');
   }
 
-  Future<bool> stopAlarm() async {
+  Future<bool> stopAlarm(int alarmId) async {
     throw UnimplementedError('stopAlarm() has not been implemented.');
   }
 
-  Future<bool> checkIfRinging() async {
+  Future<bool> checkIfRinging(int alarmId) async {
     throw UnimplementedError('checkIfRinging() has not been implemented.');
   }
 }

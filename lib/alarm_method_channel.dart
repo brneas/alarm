@@ -44,6 +44,7 @@ class MethodChannelAlarm extends AlarmPlatform {
     final res = await methodChannel.invokeMethod<bool?>(
           'setAlarm',
           {
+            "alarmId": alarmId,
             "assetAudio": assetAudio,
             "delayInSeconds": delay.inSeconds.abs().toDouble(),
             "loopAudio": loopAudio,
@@ -59,7 +60,7 @@ class MethodChannelAlarm extends AlarmPlatform {
 
     listenAppStateChange(
       onForeground: () async {
-        final isRinging = await checkIfRinging();
+        final isRinging = await checkIfRinging(alarmId);
         if (isRinging) {
           onRing?.call();
         } else {
@@ -73,8 +74,10 @@ class MethodChannelAlarm extends AlarmPlatform {
 
   /// Call the native stopAlarm function.
   @override
-  Future<bool> stopAlarm() async {
-    final res = await methodChannel.invokeMethod<bool?>('stopAlarm') ?? false;
+  Future<bool> stopAlarm(int alarmId) async {
+    final res = await methodChannel.invokeMethod<bool?>('stopAlarm',{
+      "alarmId": alarmId,
+    }) ?? false;
     print(res
         ? "[Alarm] alarm stopped with success"
         : "[Alarm] stop failed: no alarm was set");
@@ -85,12 +88,16 @@ class MethodChannelAlarm extends AlarmPlatform {
   /// current time at two different moments. If the two values are different,
   /// it means the alarm is ringing.
   @override
-  Future<bool> checkIfRinging() async {
+  Future<bool> checkIfRinging(int alarmId) async {
     final pos1 =
-        await methodChannel.invokeMethod<double?>('audioCurrentTime') ?? 0.0;
+        await methodChannel.invokeMethod<double?>('audioCurrentTime',{
+          "alarmId": alarmId,
+        }) ?? 0.0;
     await Future.delayed(const Duration(milliseconds: 100));
     final pos2 =
-        await methodChannel.invokeMethod<double?>('audioCurrentTime') ?? 0.0;
+        await methodChannel.invokeMethod<double?>('audioCurrentTime',{
+          "alarmId": alarmId,
+        }) ?? 0.0;
     final isRinging = pos2 > pos1;
     print("[Alarm] alarm is ringing: $isRinging");
     return isRinging;

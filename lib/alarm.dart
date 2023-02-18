@@ -67,11 +67,11 @@ class Alarm {
   static Future<bool> stop(int alarmId) async {
     if (iOS) {
       Notification.instance.cancel();
-      return await platform.stopAlarm();
+      return await platform.stopAlarm(alarmId);
     }
     return await AndroidAlarm.stop(alarmId);
   }
 
   /// Check if alarm is ringing
-  static Future<bool> isRinging() => platform.checkIfRinging();
+  static Future<bool> isRinging(int alarmId) => platform.checkIfRinging(alarmId);
 }
