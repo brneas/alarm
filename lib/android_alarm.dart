@@ -27,6 +27,7 @@ class AndroidAlarm {
     String? notifTitle,
     String? notifBody,
   ) async {
+    ringPort = ringPort + '-' + alarmId.toString();
     try {
       final ReceivePort port = ReceivePort();
       final success =
@@ -71,7 +72,8 @@ class AndroidAlarm {
   @pragma('vm:entry-point')
   static Future<void> playAlarm(int id, Map<String, dynamic> data) async {
     final audioPlayer = AudioPlayer();
-    SendPort send = IsolateNameServer.lookupPortByName(ringPort)!;
+    SendPort send =
+        IsolateNameServer.lookupPortByName(ringPort + '-' + id.toString())!;
 
     send.send('ring');
 
@@ -105,6 +107,7 @@ class AndroidAlarm {
     }
 
     try {
+      stopPort = stopPort + '-' + id.toString();
       final ReceivePort port = ReceivePort();
       final success =
           IsolateNameServer.registerPortWithName(port.sendPort, stopPort);
@@ -133,7 +136,8 @@ class AndroidAlarm {
   /// the audio player can stop playing and dispose.
   static Future<bool> stop(int alarmId) async {
     try {
-      final SendPort send = IsolateNameServer.lookupPortByName(stopPort)!;
+      final SendPort send = IsolateNameServer.lookupPortByName(
+          stopPort + '-' + alarmId.toString())!;
       print("[Alarm] (main) send stop to isolate");
       send.send('stop');
     } catch (e) {
