@@ -10,7 +10,7 @@ import 'package:just_audio/just_audio.dart';
 /// For Android support, AndroidAlarmManager is used to set an alarm
 /// and trigger a callback when the given time is reached.
 class AndroidAlarm {
-  static const int alarmId = 888;
+  //static const int alarmId = 888;
   static String ringPort = 'alarm-ring';
   static String stopPort = 'alarm-stop';
 
@@ -19,6 +19,7 @@ class AndroidAlarm {
 
   /// Create isolate receive port and set alarm at given time
   static Future<bool> set(
+    int alarmId,
     DateTime alarmDateTime,
     void Function()? onRing,
     String assetAudioPath,
@@ -130,7 +131,7 @@ class AndroidAlarm {
 
   /// This function will send the message 'stop' to the isolate so
   /// the audio player can stop playing and dispose.
-  static Future<bool> stop() async {
+  static Future<bool> stop(int alarmId) async {
     try {
       final SendPort send = IsolateNameServer.lookupPortByName(stopPort)!;
       print("[Alarm] (main) send stop to isolate");

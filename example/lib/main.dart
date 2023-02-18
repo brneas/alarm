@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:async';
-
 import 'package:alarm/alarm.dart';
 
 void main() => runApp(const MaterialApp(home: MyApp()));
@@ -59,6 +58,7 @@ class _MyAppState extends State<MyApp> {
 
   Future<void> setAlarm(DateTime dateTime, [bool enableNotif = true]) async {
     await Alarm.set(
+      alarmId: 123,
       alarmDateTime: dateTime,
       assetAudio: 'assets/sample.mp3',
       loopAudio: loopAudio,
@@ -152,7 +152,7 @@ class _MyAppState extends State<MyApp> {
             const SizedBox(height: 50),
             RawMaterialButton(
               onPressed: () async {
-                final stop = await Alarm.stop();
+                final stop = await Alarm.stop(123);
                 if (stop && isRinging) setState(() => isRinging = false);
               },
               fillColor: Colors.red,

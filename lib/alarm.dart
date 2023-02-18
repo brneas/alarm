@@ -31,6 +31,7 @@ class Alarm {
   /// If you want to show a notification when alarm is triggered,
   /// [notifTitle] and [notifBody] must not be null
   static Future<bool> set({
+    required int alarmId,
     required DateTime alarmDateTime,
     void Function()? onRing,
     required String assetAudio,
@@ -41,6 +42,7 @@ class Alarm {
     if (iOS) {
       assetAudio = assetAudio.split('/').last;
       return platform.setAlarm(
+        alarmId,
         alarmDateTime,
         onRing,
         assetAudio,
@@ -51,6 +53,7 @@ class Alarm {
     }
 
     return await AndroidAlarm.set(
+      alarmId,
       alarmDateTime,
       onRing,
       assetAudio,
@@ -61,12 +64,12 @@ class Alarm {
   }
 
   /// Stop alarm
-  static Future<bool> stop() async {
+  static Future<bool> stop(int alarmId) async {
     if (iOS) {
       Notification.instance.cancel();
       return await platform.stopAlarm();
     }
-    return await AndroidAlarm.stop();
+    return await AndroidAlarm.stop(alarmId);
   }
 
   /// Check if alarm is ringing

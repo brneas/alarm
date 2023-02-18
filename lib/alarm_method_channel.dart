@@ -23,6 +23,7 @@ class MethodChannelAlarm extends AlarmPlatform {
   /// Then call the native function setAlarm.
   @override
   Future<bool> setAlarm(
+    int alarmId,
     DateTime dateTime,
     void Function()? onRing,
     String assetAudio,
