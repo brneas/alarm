@@ -22,14 +22,14 @@ public class SwiftAlarmPlugin: NSObject, FlutterPlugin {
       let args = call.arguments as! Dictionary<String, Any>
       print(args["alarmId"] as! Int)
       
-      var thisSelf = self
+      var thisSelf = SwiftAlarmPlugin()
       let alarmId = args["alarmId"] as! Int
       let hasKey = someDict[alarmId] != nil
       if(hasKey){
           thisSelf = someDict[alarmId] as! SwiftAlarmPlugin
       }
       else{
-          someDict[alarmId] = SwiftAlarmPlugin()
+          someDict[alarmId] = thisSelf
       }
       print(someDict)
       
@@ -41,8 +41,10 @@ public class SwiftAlarmPlugin: NSObject, FlutterPlugin {
             thisSelf.audioPlayer.stop()
             thisSelf.audioPlayer = nil
           result(true)
+            print("Stopped")
         }
         result(false)
+        print("Stop Error")
       } else if call.method == "audioCurrentTime" {
         if thisSelf.audioPlayer != nil {
           result(Double(thisSelf.audioPlayer.currentTime))
