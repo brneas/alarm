@@ -3,7 +3,7 @@ import UIKit
 import AVFoundation
 
 public class SwiftAlarmPlugin: NSObject, FlutterPlugin {
-    var someDict = [Int: SwiftAlarmPlugin]()
+    var alarmDictionary = [Int: SwiftAlarmPlugin]()
     
   public static func register(with registrar: FlutterPluginRegistrar) {
     let channel = FlutterMethodChannel(name: "com.gdelataillade/alarm", binaryMessenger: registrar.messenger())
@@ -20,31 +20,28 @@ public class SwiftAlarmPlugin: NSObject, FlutterPlugin {
 
   public func handle(_ call: FlutterMethodCall, result: @escaping FlutterResult) {
       let args = call.arguments as! Dictionary<String, Any>
-      print(args["alarmId"] as! Int)
       
       var thisSelf = SwiftAlarmPlugin()
       let alarmId = args["alarmId"] as! Int
-      let hasKey = someDict[alarmId] != nil
+      let hasKey = alarmDictionary[alarmId] != nil
       if(hasKey){
-          thisSelf = someDict[alarmId] as! SwiftAlarmPlugin
+          thisSelf = alarmDictionary[alarmId] as! SwiftAlarmPlugin
       }
       else{
-          someDict[alarmId] = thisSelf
+          alarmDictionary[alarmId] = thisSelf
       }
-      print(someDict)
       
     DispatchQueue.global(qos: .default).async {
       if call.method == "setAlarm" {
           thisSelf.setAlarm(call: call, result: result, thisSelf: thisSelf)
       } else if call.method == "stopAlarm" {
+        alarmDictionary.removeValue(forKey: alarmId)
         if thisSelf.audioPlayer != nil {
             thisSelf.audioPlayer.stop()
             thisSelf.audioPlayer = nil
           result(true)
-            print("Stopped")
         }
         result(false)
-        print("Stop Error")
       } else if call.method == "audioCurrentTime" {
         if thisSelf.audioPlayer != nil {
           result(Double(thisSelf.audioPlayer.currentTime))
